@@ -46,3 +46,41 @@ body {
   align-items: center;
   margin-bottom: 2.5rem;
 }
+
+.addChatButton{
+  height: 2rem;
+  padding-right: 1rem;
+}
+
+.midButton{
+  background: #5a4bff;
+  border: none;
+  color: white;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  width: 25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+  border-radius: 0.5rem;
+}
+
+.query{
+    display: flex;
+    align-items: center;
+    background: transparent;
+    color: rgba(222, 222, 222, 1);
+    padding: 1.5rem;
+    width: 25rem;
+    margin: 1rem auto;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(98, 98, 98, 1);
+}
+
+.query>img {
+  margin-right: 2rem;
+  object-fit: cover;
+  height: 1.75rem;
+}

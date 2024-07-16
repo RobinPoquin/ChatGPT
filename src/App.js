@@ -8,8 +8,26 @@ import rocket from './assets/rocket.svg';
 import sendBtn from './assets/send.svg';
 import userIcon from './assets/user-icon.png';
 import gptImgLogo from './assets/chatgptLogo.svg';
+import { sendMessageToOpenAI } from './openai';
+import { useState } from 'react';
 
 function App() {
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([{
+    text: "Bonjour, comment puis je vous aider ?",
+    isBot: true,
+  }]);
+
+  const HandleSend = async () => {
+    const response = await sendMessageToOpenAI(input);
+    console.log(response);
+    setMessages([
+      ...messages,
+      { text: input, isBot: false},
+      { text: response, isBot: true}
+    ])
+  }
+
   return (
     <div className="App">
       <div className='sideBar'>
@@ -50,23 +68,19 @@ function App() {
 {/*---------- Partie Chatting -------------*/}
       <div className='main'>
         <div className='chats'>
-          <div className='chat'>
-            <img className='chatImg' src={userIcon} alt=''/>
-            <p className='txt'>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus semper justo in gravida fringilla. Donec nec nunc metus. Proin quis.
-            </p>
-          </div>
-          <div className='chat'>
-            <img className='chatImg' src={gptImgLogo} alt=''/>
-            <p className='txt'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nibh sem, elementum eu egestas id, fermentum ac velit. Ut laoreet, odio ut posuere tempus, leo augue dapibus enim, ac condimentum nulla nisl quis nibh. Mauris accumsan ex vitae egestas maximus. Nullam convallis, eros vitae gravida vulputate, urna nisi sodales lacus, quis imperdiet risus sapien nec magna. Sed imperdiet, dolor a commodo hendrerit, metus enim efficitur mi, a convallis enim turpis vel lectus. Suspendisse ac dapibus magna, eget tempor quam. Praesent a justo eget lacus placerat imperdiet a id ligula. Suspendisse maximus, magna id ullamcorper molestie, lacus quam accumsan arcu, id.
-            </p>
-          </div>
+          {messages.map((messages, i) => 
+            <div key={i} className={messages.isBot ? 'chat bot' : "chat"}>
+              <img className='chatImg' src={messages.isBot?gptImgLogo: userIcon} alt=''/>
+                <p className='txt'>
+                  { messages.text }
+                </p>
+            </div>
+          )}
         </div>
         <div className='chatFooter'>
           <div className='inp'>
-            <input type='text' placeholder='Envoyer un message...' />
-            <button className='send'>
+            <input type='text' placeholder='Envoyer un message...' value={input} onChange={(e) =>{setInput(e.target.value)}}/>
+            <button className='send' onClick={HandleSend}>
               <img src={sendBtn} alt='send'/>
             </button>
           </div>

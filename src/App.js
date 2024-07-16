@@ -9,21 +9,50 @@ import sendBtn from './assets/send.svg';
 import userIcon from './assets/user-icon.png';
 import gptImgLogo from './assets/chatgptLogo.svg';
 import { sendMessageToOpenAI } from './openai';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function App() {
+  const msgEnd = useRef(null);
+
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([{
     text: "Bonjour, comment puis je vous aider ?",
     isBot: true,
   }]);
 
+  useEffect(() => {
+    msgEnd.current.scrollIntoView();
+  }, [messages])
+
   const HandleSend = async () => {
-    const response = await sendMessageToOpenAI(input);
-    console.log(response);
+    const text = input;
+    setInput('');
     setMessages([
       ...messages,
-      { text: input, isBot: false},
+      {text, isBot: false}
+    ])
+    const response = await sendMessageToOpenAI(text);
+    setMessages([
+      ...messages,
+      { text, isBot: false},
+      { text: response, isBot: true}
+    ])
+  }
+
+  const handleEnter = async (e) => {
+    if(e.key === 'Enter') await HandleSend();
+  }
+
+  const handleQuery = async (e) => {
+    const text = e.target.value;;
+    setMessages([
+      ...messages,
+      {text, isBot: false}
+    ])
+    const response = await sendMessageToOpenAI(text);
+    setMessages([
+      ...messages,
+      { text, isBot: false},
       { text: response, isBot: true}
     ])
   }
@@ -40,19 +69,19 @@ function App() {
               ChatGPT
             </span>
           </div>
-          <button className='midButton'>
+          <button className='midButton' onClick={() => {window.location.reload()}}>
             <img src={addBtn} alt='new Chat' className='addChatButton'/>
             Nouveau Chat
           </button>
     {/*---------- upperSideBottom -------------*/}
           <div className='upperSideBottom'>
             {/*---------- Exemple de Question -------------*/}
-            <button className='query'>
+            <button className='query' onClick={handleQuery} value={"C'est quoi la programmation ?"}>
               <img src={messageIcon} alt='query'/>
               C'est quoi la programmation ?
             </button>
             <br/>
-            <button className='query'>
+            <button className='query' onClick={handleQuery} value={"Comment utiliser une API ?"}>
               <img src={messageIcon} alt='query'/>
               Comment utiliser une API ?
             </button>
@@ -76,10 +105,11 @@ function App() {
                 </p>
             </div>
           )}
+          <div ref={msgEnd}/>
         </div>
         <div className='chatFooter'>
           <div className='inp'>
-            <input type='text' placeholder='Envoyer un message...' value={input} onChange={(e) =>{setInput(e.target.value)}}/>
+            <input type='text' placeholder='Envoyer un message...' value={input} onKeyDown={handleEnter} onChange={(e) =>{setInput(e.target.value)}}/>
             <button className='send' onClick={HandleSend}>
               <img src={sendBtn} alt='send'/>
             </button>
